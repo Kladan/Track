@@ -1,7 +1,7 @@
 package com.teambuktu.rest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,19 +15,24 @@ import com.teambuktu.repositories.MeasurementRepository;
 @RestController
 public class MeasurementRestController {
 
-	private final Logger logger = LoggerFactory.getLogger(MeasurementRestController.class);
-
 	@Autowired
 	private MeasurementRepository measurementRepository;
 
-	@RequestMapping(value = "measurements/device/{id}", method = RequestMethod.GET)
-	public ExtendedMeasurement getMeasuredData(@PathVariable("id") String id) {
+	@RequestMapping(value = "measurements/extended/device/{id}", method = RequestMethod.GET)
+	public ExtendedMeasurement getExtendedMeasurement(@PathVariable("id") String id) {
 
-		logger.info(id);
 		Measurement lastMeasurement = measurementRepository.findFirstByDeviceIdentifierOrderByTimestampDesc(id);
 
 		ExtendedMeasurement measurement = new ExtendedMeasurement(lastMeasurement);
 		return measurement;
+	}
+
+	@RequestMapping(value = "measurements/device/{id}", method = RequestMethod.GET)
+	public List<Measurement> getAllMeasurementsByDeviceId(@PathVariable("id") String id) {
+
+		List<Measurement> measurements = measurementRepository.findByDeviceIdentifier(id);
+
+		return measurements;
 	}
 
 }
