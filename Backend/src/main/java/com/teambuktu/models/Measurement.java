@@ -13,9 +13,9 @@ public class Measurement {
 
 	private String deviceIdentifier;
 
-	private long soilMoisture;
+	private long soilHumidity;
 
-	private long environementMoisture;
+	private long environmentHumidity;
 
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private Date timestamp;
@@ -30,20 +30,20 @@ public class Measurement {
 		this.id = id;
 	}
 
-	public long getSoilMoisture() {
-		return soilMoisture;
+	public long getSoilHumidity() {
+		return soilHumidity;
 	}
 
-	public void setSoilMoisture(long soilMoisture) {
-		this.soilMoisture = soilMoisture;
+	public void setSoilHumidity(long soilHumidity) {
+		this.soilHumidity = soilHumidity;
 	}
 
-	public long getEnvironementMoisture() {
-		return environementMoisture;
+	public long getEnvironmentHumidity() {
+		return environmentHumidity;
 	}
 
-	public void setEnvironementMoisture(long environementMoisture) {
-		this.environementMoisture = environementMoisture;
+	public void setEnvironmentHumidity(long environmentHumidity) {
+		this.environmentHumidity = environmentHumidity;
 	}
 
 	public Date getTimestamp() {
