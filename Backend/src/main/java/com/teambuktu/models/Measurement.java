@@ -14,7 +14,7 @@ public class Measurement {
 	@Id
 	private String id;
 
-	@JsonIgnore
+
 	private String deviceIdentifier;
 
 	@Transient

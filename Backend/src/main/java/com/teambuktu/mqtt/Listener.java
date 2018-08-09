@@ -9,6 +9,7 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.amqp.support.converter.*;
 
 @Component
 public class Listener {
@@ -33,12 +34,18 @@ public class Listener {
     }
 
     @Bean
+    public MessageConverter jsonMessageConverter(){
+        return new Jackson2JsonMessageConverter();
+    }
+
+    @Bean
     SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
                                              MessageListenerAdapter listenerAdapter) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queueName);
         container.setMessageListener(listenerAdapter);
+        //container.setMessageConverter(jsonMessageConverter());
         return container;
     }
 
