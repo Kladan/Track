@@ -27,6 +27,12 @@ public class MeasurementRestController {
 	@Autowired
 	private MeasurementLogic measurementLogic;
 
+	/**
+	 * Returns an json object with the last measurement data and device data
+	 * 
+	 * @param id: Device Identifier
+	 * @return
+	 */
 	@RequestMapping(value = "measurements/extended/device/{id}", method = RequestMethod.GET)
 	public ExtendedMeasurement getExtendedMeasurement(@PathVariable("id") String id) {
 
@@ -37,12 +43,18 @@ public class MeasurementRestController {
 		return measurementLogic.getExtendedMeasurement(lastMeasurement);
 	}
 
+	/**
+	 * Returns all measured data for an device.
+	 * 
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "measurements/device/{id}", method = RequestMethod.GET)
 	public List<Measurement> getAllMeasurementsByDeviceId(@PathVariable("id") String id) {
 
 		Device device = deviceRepository.findByDeviceIdentifier(id);
 
-		List<Measurement> measurements = measurementRepository.findByDeviceIdentifier(id);
+		List<Measurement> measurements = measurementRepository.findByDeviceIdentifierOrderByTimestampDesc(id);
 		for (Measurement measurement : measurements) {
 			measurement.setDevice(device);
 		}
