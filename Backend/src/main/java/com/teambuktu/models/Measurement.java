@@ -8,6 +8,10 @@ public class Measurement {
 	@Id
 	private String id;
 
+	private String deviceIdentifier;
+
+	private String deviceName;
+
 	private double latitude;
 
 	private double longitude;
@@ -74,6 +78,22 @@ public class Measurement {
 
 	public void setTemperature(float temperature) {
 		this.temperature = temperature;
+	}
+
+	public String getDeviceIdentifier() {
+		return deviceIdentifier;
+	}
+
+	public void setDeviceIdentifier(String deviceIdentifier) {
+		this.deviceIdentifier = deviceIdentifier;
+	}
+
+	public String getDeviceName() {
+		return deviceName;
+	}
+
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
 	}
 
 }
