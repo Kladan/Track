@@ -3,19 +3,26 @@ package com.teambuktu.models;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Measurement {
 
 	@Id
 	private String id;
 
+	@JsonIgnore
 	private String deviceIdentifier;
 
-	private long soilMoisture;
+	@Transient
+	private Device device;
 
-	private long environementMoisture;
+	private long soilHumidity;
+
+	private long environmentHumidity;
 
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private Date timestamp;
@@ -30,20 +37,20 @@ public class Measurement {
 		this.id = id;
 	}
 
-	public long getSoilMoisture() {
-		return soilMoisture;
+	public long getSoilHumidity() {
+		return soilHumidity;
 	}
 
-	public void setSoilMoisture(long soilMoisture) {
-		this.soilMoisture = soilMoisture;
+	public void setSoilHumidity(long soilHumidity) {
+		this.soilHumidity = soilHumidity;
 	}
 
-	public long getEnvironementMoisture() {
-		return environementMoisture;
+	public long getEnvironmentHumidity() {
+		return environmentHumidity;
 	}
 
-	public void setEnvironementMoisture(long environementMoisture) {
-		this.environementMoisture = environementMoisture;
+	public void setEnvironmentHumidity(long environmentHumidity) {
+		this.environmentHumidity = environmentHumidity;
 	}
 
 	public Date getTimestamp() {
@@ -64,6 +71,18 @@ public class Measurement {
 
 	public String getDeviceIdentifier() {
 		return this.deviceIdentifier;
+	}
+
+	public Device getDevice() {
+		if (this.device == null) {
+
+		}
+
+		return this.device;
+	}
+
+	public void setDevice(Device device) {
+		this.device = device;
 	}
 
 	public void setDeviceIdentifier(String deviceIdentifier) {

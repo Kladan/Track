@@ -8,4 +8,5 @@ import com.teambuktu.models.Device;
 @RepositoryRestResource(collectionResourceRel = "device", path = "device")
 public interface DeviceRepository extends MongoRepository<Device, String> {
 
+	public Device findByDeviceIdentifier(String deviceIdentifier);
 }

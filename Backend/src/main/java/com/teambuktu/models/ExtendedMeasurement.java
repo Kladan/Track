@@ -5,9 +5,10 @@ public class ExtendedMeasurement extends Measurement {
 	public ExtendedMeasurement(Measurement measurement) {
 		this.setId(measurement.getId());
 		this.setDeviceIdentifier(measurement.getDeviceIdentifier());
-		this.setEnvironementMoisture(measurement.getEnvironementMoisture());
-		this.setSoilMoisture(measurement.getSoilMoisture());
+		this.setEnvironmentHumidity(measurement.getEnvironmentHumidity());
+		this.setSoilHumidity(measurement.getSoilHumidity());
 		this.setTemperature(measurement.getTemperature());
 		this.setTimestamp(measurement.getTimestamp());
+		this.setDevice(measurement.getDevice());
 	}
 }
