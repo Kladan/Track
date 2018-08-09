@@ -1,7 +1,10 @@
 package com.teambuktu.models;
 
-import org.bson.BsonTimestamp;
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 public class Measurement {
 
@@ -10,17 +13,12 @@ public class Measurement {
 
 	private String deviceIdentifier;
 
-	private String deviceName;
+	private long soilMoisture;
 
-	private double latitude;
+	private long environementMoisture;
 
-	private double longitude;
-
-	private long SoilMoisture;
-
-	private long EnvironementMoisture;
-
-	private BsonTimestamp timestamp;
+	@DateTimeFormat(iso = ISO.DATE_TIME)
+	private Date timestamp;
 
 	private float temperature;
 
@@ -32,43 +30,27 @@ public class Measurement {
 		this.id = id;
 	}
 
-	public double getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
-
-	public double getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
-
 	public long getSoilMoisture() {
-		return SoilMoisture;
+		return soilMoisture;
 	}
 
 	public void setSoilMoisture(long soilMoisture) {
-		SoilMoisture = soilMoisture;
+		this.soilMoisture = soilMoisture;
 	}
 
 	public long getEnvironementMoisture() {
-		return EnvironementMoisture;
+		return environementMoisture;
 	}
 
 	public void setEnvironementMoisture(long environementMoisture) {
-		EnvironementMoisture = environementMoisture;
+		this.environementMoisture = environementMoisture;
 	}
 
-	public BsonTimestamp getTimestamp() {
+	public Date getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(BsonTimestamp timestamp) {
+	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -81,19 +63,11 @@ public class Measurement {
 	}
 
 	public String getDeviceIdentifier() {
-		return deviceIdentifier;
+		return this.deviceIdentifier;
 	}
 
 	public void setDeviceIdentifier(String deviceIdentifier) {
 		this.deviceIdentifier = deviceIdentifier;
-	}
-
-	public String getDeviceName() {
-		return deviceName;
-	}
-
-	public void setDeviceName(String deviceName) {
-		this.deviceName = deviceName;
 	}
 
 }

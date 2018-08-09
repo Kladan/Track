@@ -9,4 +9,6 @@ import com.teambuktu.models.Measurement;
 public interface MeasurementRepository extends MongoRepository<Measurement, String> {
 
 	public List<Measurement> findByDeviceIdentifier(String deviceIdentifier);
+
+	public Measurement findFirstByDeviceIdentifierOrderByTimestampDesc(String deviceIdentifier);
 }
