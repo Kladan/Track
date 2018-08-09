@@ -9,5 +9,6 @@ public class ExtendedMeasurement extends Measurement {
 		this.setSoilHumidity(measurement.getSoilHumidity());
 		this.setTemperature(measurement.getTemperature());
 		this.setTimestamp(measurement.getTimestamp());
+		this.setDevice(measurement.getDevice());
 	}
 }

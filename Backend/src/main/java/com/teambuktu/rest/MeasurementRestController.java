@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teambuktu.business.MeasurementLogic;
+import com.teambuktu.models.Device;
 import com.teambuktu.models.ExtendedMeasurement;
 import com.teambuktu.models.Measurement;
+import com.teambuktu.repositories.DeviceRepository;
 import com.teambuktu.repositories.MeasurementRepository;
 
 @RestController
@@ -18,21 +21,32 @@ public class MeasurementRestController {
 	@Autowired
 	private MeasurementRepository measurementRepository;
 
+	@Autowired
+	private DeviceRepository deviceRepository;
+
+	@Autowired
+	private MeasurementLogic measurementLogic;
+
 	@RequestMapping(value = "measurements/extended/device/{id}", method = RequestMethod.GET)
 	public ExtendedMeasurement getExtendedMeasurement(@PathVariable("id") String id) {
 
+		Device device = deviceRepository.findByDeviceIdentifier(id);
 		Measurement lastMeasurement = measurementRepository.findFirstByDeviceIdentifierOrderByTimestampDesc(id);
+		lastMeasurement.setDevice(device);
 
-		ExtendedMeasurement measurement = new ExtendedMeasurement(lastMeasurement);
-		return measurement;
+		return measurementLogic.getExtendedMeasurement(lastMeasurement);
 	}
 
 	@RequestMapping(value = "measurements/device/{id}", method = RequestMethod.GET)
 	public List<Measurement> getAllMeasurementsByDeviceId(@PathVariable("id") String id) {
 
+		Device device = deviceRepository.findByDeviceIdentifier(id);
+
 		List<Measurement> measurements = measurementRepository.findByDeviceIdentifier(id);
+		for (Measurement measurement : measurements) {
+			measurement.setDevice(device);
+		}
 
 		return measurements;
 	}
-
 }
