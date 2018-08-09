@@ -69,6 +69,15 @@
 // WLan
 #include "BCDS_WlanConnect.h"
 #include "BCDS_NetworkConfig.h"
+#include "PAL_initialize_ih.h"
+#include "PAL_socketMonitor_ih.h"
+
+// MQTT
+#include "Serval_Mqtt.h"
+
+//
+#include "XdkSensorHandle.h"
+
 
 /* constant definitions ***************************************************** */
 #define TIMERBLOCKTIME UINT32_C(0xffff)
@@ -76,9 +85,22 @@
 #define TIMER_AUTORELOAD_OFF pdFALSE
 #define SECONDS(x) ((portTickType) (x * 1000) / portTICK_RATE_MS)
 #define MILLISECONDS(x) ((portTickType) x / portTICK_RATE_MS)
+
+#define MQTT_BROKER_HOST "broker.hivemq.com"
+//#define MQTT_BROKER_HOST "192.168.33.25"
+#define MQTT_BROKER_PORT 1883
+
 /* local variables ********************************************************** */
-WlanConnect_SSID_T connectSSID = "EventiLoccioni";
-WlanConnect_PassPhrase_T connectPassPhrase = "welcometoloccioni";
+static MqttSession_T session;
+static MqttSession_T *session_ptr = &session;
+WlanConnect_SSID_T connectSSID = (WlanConnect_SSID_T)"EventiLoccioni";
+WlanConnect_PassPhrase_T connectPassPhrase = (WlanConnect_PassPhrase_T)"welcometoloccioni";
+xTimerHandle timerHandle;
+char * outputMqtt;
+
+int32_t getTemperature = INT32_C(0);
+uint32_t getHumidity = INT32_C(0);
+
 /* global variables ********************************************************* */
 
 /* inline functions ********************************************************* */
@@ -92,13 +114,15 @@ WlanConnect_PassPhrase_T connectPassPhrase = "welcometoloccioni";
  *
  */
 void initDeviceId(void){
-	xdkID = (char*) malloc(8);
+	xdkID = (char*) malloc(16);
     unsigned int * serialStackAddress0 = 0xFE081F0;
     unsigned int * serialStackAddress1 = 0xFE081F4;
 
     unsigned int serialUnique0 = *serialStackAddress0;
     unsigned int serialUnique1 = *serialStackAddress1;
-    sprintf(xdkID, "0x%08x%08x\n\r",serialUnique1,serialUnique0);
+    sprintf(xdkID, "0x%08x%08x",serialUnique1,serialUnique0);
+
+    outputMqtt = (char*) malloc(50*sizeof(char));
 }
 
 void initGPIO(void){
@@ -112,7 +136,7 @@ void initGPIO(void){
 	ADC_InitSingle(ADC0, &channelInit);
 }
 
-uint32_t getData(void){
+uint32_t getSolidData(void){
 	uint32_t AdcSample = 0;
 	while ((ADC0->STATUS & (ADC_STATUS_SINGLEACT)) && (BSP_UNLOCKED == ADCLock));
 	__disable_irq();
@@ -128,15 +152,37 @@ uint32_t getData(void){
 	return AdcSample;
 }
 
+static void publish(void){
+//  static char *pub_message = "Hello David";
+  static char *pub_topic = "SensorData";
+  static StringDescr_T pub_topic_descr;
+  StringDescr_wrap(&pub_topic_descr, pub_topic);
+
+  Mqtt_publish(session_ptr, pub_topic_descr, outputMqtt,
+                strlen(outputMqtt), MQTT_QOS_AT_MOST_ONE, false);
+}
+
 void printData(xTimerHandle xTimer){
 	(void) xTimer;
-	printf("Messwert: %lu\n\r", (unsigned long)getData());
+
+	Environmental_readHumidity(xdkEnvironmental_BME280_Handle,&getHumidity);
+	Environmental_readTemperature(xdkEnvironmental_BME280_Handle,&getTemperature);
+
+	sprintf(outputMqtt, "{\
+			\"deviceIdentifier\": %s,\
+			\"soilHumidity\": %lu,\
+			\"temperature\": %ld,\
+			\"environmentHumidity\": %lu}", \
+			xdkID,(unsigned long)getSolidData(), (long) (getTemperature-6)/1000, (unsigned long) getHumidity );
+	publish();
 	// printf("Messweert: Test\n\r");
 }
 
-void createAndStartTimer(TimerCallbackFunction_t callback)
+
+
+void createTimer(TimerCallbackFunction_t callback)
 {
-  xTimerHandle timerHandle = xTimerCreate(
+  timerHandle = xTimerCreate(
     (const char * const) "My Timer", // used only for debugging purposes
     SECONDS(3),                     // timer period
     TIMER_AUTORELOAD_ON,             // Autoreload on or off - should the timer
@@ -148,19 +194,136 @@ void createAndStartTimer(TimerCallbackFunction_t callback)
     assert(pdFAIL);
     return;
   }
-  BaseType_t timerResult = xTimerStart(timerHandle, TIMERBLOCKTIME);
-  if(pdTRUE != timerResult) {
-    assert(pdFAIL);
-  }
+}
+
+void printOwnIp(void){
+	NetworkConfig_IpSettings_T myIp;
+	NetworkConfig_GetIpSettings(&myIp);
+
+	// insert a delay here, if the IP is not properly printed
+	printf("The IP was retrieved: %u.%u.%u.%u \n\r",
+	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 3)),
+	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 2)),
+	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 1)),
+	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 0)));
+}
+
+void connectToWifi(void){
+	Retcode_T retStatusConnect = (Retcode_T) WlanConnect_WPA(connectSSID,
+	            connectPassPhrase,0);
+	if (retStatusConnect == RETCODE_OK) {
+		printOwnIp();
+	}
 }
 
 void initWifi(void){
 	WlanConnect_Init();
-	Retcode_T retStatusConnect = (Retcode_T) WlanConnect_WPA(connectSSID,
-	            connectPassPhrase,0);
-	if (retStatusConnect == RETCODE_OK) {
-	  printf("Connected successfully.\n\r");
-	}
+	NetworkConfig_SetIpDhcp(0);
+	connectToWifi();
+
+	PAL_initialize();
+	PAL_socketMonitorInit();
+}
+
+static void handle_connection(MqttConnectionEstablishedEvent_T connectionData){
+  int rc_connect = (int) connectionData.connectReturnCode;
+  printf("Connection Event:\n\r"
+          "\tServer Return Code: %d (0 for success)\n\r",
+          (int) rc_connect);
+}
+
+retcode_t event_handler(MqttSession_T* session, MqttEvent_t event,
+              const MqttEventData_t* eventData) {
+  BCDS_UNUSED(session);
+  switch(event){
+    case MQTT_CONNECTION_ESTABLISHED:
+      handle_connection(eventData->connect);
+      // subscribing and publishing can now be done
+      BaseType_t timerResult = xTimerStart(timerHandle, TIMERBLOCKTIME);
+      if(pdTRUE != timerResult) {
+        assert(pdFAIL);
+      }
+      // publish();
+      break;
+    case MQTT_CONNECTION_ERROR:
+      handle_connection(eventData->connect);
+      break;
+    case MQTT_INCOMING_PUBLISH:
+      break;
+    case MQTT_SUBSCRIPTION_ACKNOWLEDGED:
+      printf("Subscription Successful\n\r");
+      break;
+    case MQTT_PUBLISHED_DATA:
+      printf("Publish Successful\n\r");
+      break;
+    default:
+      printf("Unhandled MQTT Event: %d\n\r", event);
+      break;
+  }
+  return RC_OK;
+}
+
+retcode_t initMQTT(void){
+  retcode_t rc_initialize = Mqtt_initialize();
+  if (rc_initialize == RC_OK) {
+    session_ptr = &session;
+    Mqtt_initializeInternalSession(session_ptr);
+  }
+  return rc_initialize;
+}
+
+
+void config_set_target(void){
+  static char mqtt_broker[64];
+  const char *mqtt_broker_format = "mqtt://%s:%d";
+  char server_ip_buffer[13];
+  Ip_Address_T ip;
+
+  PAL_getIpaddress((uint8_t *) MQTT_BROKER_HOST, &ip);
+  Ip_convertAddrToString(&ip, server_ip_buffer);
+  sprintf(mqtt_broker, mqtt_broker_format,
+		  server_ip_buffer, MQTT_BROKER_PORT);
+
+  printf(mqtt_broker);
+  SupportedUrl_fromString(mqtt_broker,
+              (uint16_t) strlen(mqtt_broker), &session_ptr->target);
+}
+
+void config_set_connect_data(void){
+  char *device_name = xdkID;
+  static char *username = "xdk";
+  static char *password = "xdk";
+
+  session_ptr->MQTTVersion = 3;
+  session_ptr->keepAliveInterval = 100;
+  session_ptr->cleanSession = true;
+  session_ptr->will.haveWill = false;
+
+
+  StringDescr_T device_name_descr;
+  StringDescr_wrap(&device_name_descr, device_name);
+  session_ptr->clientID = device_name_descr;
+
+  StringDescr_T username_descr;
+  StringDescr_wrap(&username_descr, username);
+  session_ptr->username = username_descr;
+
+  StringDescr_T password_descr;
+  StringDescr_wrap(&password_descr, password);
+  session_ptr->password = password_descr;
+}
+
+void config_set_event_handler(void){
+  session_ptr->onMqttEvent = event_handler;
+}
+
+retcode_t connectMQTT(void){
+  retcode_t rc = RC_INVALID_STATUS;
+  rc = Mqtt_connect(session_ptr);
+  if (rc != RC_OK) {
+    printf("Could not connect, error 0x%04x\n", rc);
+  }
+  return rc;
 }
 
 void appInitSystem(void * CmdProcessorHandle, uint32_t param2)
@@ -172,10 +335,24 @@ void appInitSystem(void * CmdProcessorHandle, uint32_t param2)
         assert(false);
     }
     BCDS_UNUSED(param2);
+    Board_EnablePowerSupply3V3(EXTENSION_BOARD);
+
     initDeviceId();
     initGPIO();
-    createAndStartTimer(printData);
+    Environmental_init(xdkEnvironmental_BME280_Handle);
+    createTimer(printData);
     initWifi();
+
+    retcode_t rc = RC_MQTT_NOT_CONNECTED;
+    rc = initMQTT();
+    if(rc == RC_OK){
+      config_set_target();
+      config_set_connect_data();
+      config_set_event_handler();
+      connectMQTT();
+    } else {
+      printf("Initialize Failed\n\r");
+    }
 }
 /**@} */
 /** ************************************************************************* */
