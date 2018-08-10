@@ -8,27 +8,28 @@
 
 /* Begin PBXBuildFile section */
 		E90C1904211C4A5900401DAC /* AppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90C1903211C4A5900401DAC /* AppController.swift */; };
+		E90C1906211C8F2E00401DAC /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90C1905211C8F2E00401DAC /* SetupViewController.swift */; };
 		E9176EF0211C287D00BD12A3 /* SetupCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9176EEA211C287D00BD12A3 /* SetupCollectionViewCell.swift */; };
-		E9176EF1211C287D00BD12A3 /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9176EEB211C287D00BD12A3 /* SetupViewController.swift */; };
 		E9176EF2211C287D00BD12A3 /* LocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9176EEC211C287D00BD12A3 /* LocationViewController.swift */; };
 		E9176EF3211C287D00BD12A3 /* QRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9176EED211C287D00BD12A3 /* QRViewController.swift */; };
 		E9176EF4211C287D00BD12A3 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9176EEE211C287D00BD12A3 /* LaunchViewController.swift */; };
-		E9176EF5211C287D00BD12A3 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9176EEF211C287D00BD12A3 /* HomeViewController.swift */; };
+		E930C83D211CDC9400BA3A8A /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E930C83C211CDC9400BA3A8A /* HomeCollectionViewCell.swift */; };
 		E9778BD0211C0E8200402C69 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9778BCF211C0E8200402C69 /* AppDelegate.swift */; };
 		E9778BD5211C0E8200402C69 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9778BD3211C0E8200402C69 /* Main.storyboard */; };
 		E9778BD7211C0E8300402C69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9778BD6211C0E8300402C69 /* Assets.xcassets */; };
 		E9778BDA211C0E8300402C69 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9778BD8211C0E8300402C69 /* LaunchScreen.storyboard */; };
 		E9ADB7EA211C26910097D1AB /* ApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9ADB7E9211C26910097D1AB /* ApiService.swift */; };
+		E9D627DD211D983500047376 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D627DC211D983500047376 /* HomeViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E90C1903211C4A5900401DAC /* AppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppController.swift; sourceTree = "<group>"; };
+		E90C1905211C8F2E00401DAC /* SetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupViewController.swift; sourceTree = "<group>"; };
 		E9176EEA211C287D00BD12A3 /* SetupCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupCollectionViewCell.swift; sourceTree = "<group>"; };
-		E9176EEB211C287D00BD12A3 /* SetupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupViewController.swift; sourceTree = "<group>"; };
 		E9176EEC211C287D00BD12A3 /* LocationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationViewController.swift; sourceTree = "<group>"; };
 		E9176EED211C287D00BD12A3 /* QRViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRViewController.swift; sourceTree = "<group>"; };
 		E9176EEE211C287D00BD12A3 /* LaunchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaunchViewController.swift; sourceTree = "<group>"; };
-		E9176EEF211C287D00BD12A3 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		E930C83C211CDC9400BA3A8A /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		E9778BCC211C0E8200402C69 /* Umidity.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Umidity.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9778BCF211C0E8200402C69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E9778BD4211C0E8200402C69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -36,6 +37,7 @@
 		E9778BD9211C0E8300402C69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E9778BDB211C0E8300402C69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E9ADB7E9211C26910097D1AB /* ApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiService.swift; sourceTree = "<group>"; };
+		E9D627DC211D983500047376 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +77,7 @@
 				E9778BDB211C0E8300402C69 /* Info.plist */,
 				E9778BD8211C0E8300402C69 /* LaunchScreen.storyboard */,
 				E9778BD3211C0E8200402C69 /* Main.storyboard */,
+				E930C83C211CDC9400BA3A8A /* HomeCollectionViewCell.swift */,
 				E9176EEA211C287D00BD12A3 /* SetupCollectionViewCell.swift */,
 				E9D744F3211C2840004D46A5 /* ViewControllers */,
 			);
@@ -84,11 +87,11 @@
 		E9D744F3211C2840004D46A5 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				E9176EEF211C287D00BD12A3 /* HomeViewController.swift */,
+				E9D627DC211D983500047376 /* HomeViewController.swift */,
 				E9176EEE211C287D00BD12A3 /* LaunchViewController.swift */,
 				E9176EEC211C287D00BD12A3 /* LocationViewController.swift */,
 				E9176EED211C287D00BD12A3 /* QRViewController.swift */,
-				E9176EEB211C287D00BD12A3 /* SetupViewController.swift */,
+				E90C1905211C8F2E00401DAC /* SetupViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -169,9 +172,10 @@
 				E9778BD0211C0E8200402C69 /* AppDelegate.swift in Sources */,
 				E9176EF0211C287D00BD12A3 /* SetupCollectionViewCell.swift in Sources */,
 				E9176EF3211C287D00BD12A3 /* QRViewController.swift in Sources */,
+				E9D627DD211D983500047376 /* HomeViewController.swift in Sources */,
+				E930C83D211CDC9400BA3A8A /* HomeCollectionViewCell.swift in Sources */,
+				E90C1906211C8F2E00401DAC /* SetupViewController.swift in Sources */,
 				E90C1904211C4A5900401DAC /* AppController.swift in Sources */,
-				E9176EF5211C287D00BD12A3 /* HomeViewController.swift in Sources */,
-				E9176EF1211C287D00BD12A3 /* SetupViewController.swift in Sources */,
 				E9176EF2211C287D00BD12A3 /* LocationViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
