@@ -87,8 +87,8 @@
 #define SECONDS(x) ((portTickType) (x * 1000) / portTICK_RATE_MS)
 #define MILLISECONDS(x) ((portTickType) x / portTICK_RATE_MS)
 
-#define MQTT_BROKER_HOST "broker.hivemq.com"
-//#define MQTT_BROKER_HOST "192.168.33.25"
+//#define MQTT_BROKER_HOST "broker.hivemq.com"
+#define MQTT_BROKER_HOST "192.168.33.25"
 #define MQTT_BROKER_PORT 1883
 
 /* local variables ********************************************************** */
@@ -194,7 +194,7 @@ void printData(xTimerHandle xTimer) {
 	Environmental_readPressure(xdkEnvironmental_BME280_Handle,&getPressure);
 
 	sprintf(outputMqtt, "{\
-			\"deviceIdentifier\": %s,\
+			\"deviceIdentifier\": \"%s\",\
 			\"soilHumidity\": %lu,\
 			\"temperature\": %ld,\
 			\"environmentHumidity\": %lu,\
