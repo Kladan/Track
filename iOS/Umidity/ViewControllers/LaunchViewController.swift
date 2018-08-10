@@ -32,16 +32,10 @@ class LaunchViewController: UIViewController {
 		
 		let devicesFromStorage = UserDefaults.standard.array(forKey: "myDevices")
 		
-		
-		if let devices = devicesFromStorage {
-			
+		if devicesFromStorage != nil {
 			self.performSegue(withIdentifier: launchHomeSegue, sender: nil)
-			
-			
 		}
-		
 		else {
-			
 			self.performSegue(withIdentifier: launchSetupSegue, sender: nil)
 			
 		}
