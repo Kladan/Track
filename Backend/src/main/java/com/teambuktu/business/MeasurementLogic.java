@@ -43,7 +43,7 @@ public class MeasurementLogic {
 
 	private long calculateSoilHumidityPercentage(long soilHumidity) {
 		double percentageSoilHumidity = (soilHumidity * 100) / this.MAX_HUMIDITY;
-		logger.info("Soil Humidity percentage: %.2f", percentageSoilHumidity);
+		logger.info(String.format("Soil Humidity percentage: %.2f", percentageSoilHumidity));
 
 		return Math.round(percentageSoilHumidity);
 	}
@@ -58,16 +58,16 @@ public class MeasurementLogic {
 		for (int i = 0; i < 12; i++) {
 			step = (i + 1);
 			double expVal = -1 * (temperature / 400) * step;
-			logger.info("e^... value: %f", expVal);
+			logger.info(String.format("e^... value: %f", expVal));
 			double calculatedValue = soilHumidity * Math.exp(expVal);
-			logger.info("calculated prediction value: %.2f", calculatedValue);
+			logger.info(String.format("calculated prediction value: %.2f", calculatedValue));
 
 			if (calculatedValue < CRITICAL_VALUE) {
 				break;
 			}
 		}
 
-		logger.info("Time to critical: %d", step);
+		logger.info(String.format("Time to critical: %d", step));
 		extendedMeasurement.setTimeToCritical(step);
 	}
 

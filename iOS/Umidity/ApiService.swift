@@ -18,7 +18,7 @@ class ApiService {
 	var jsonEncoder = JSONEncoder()
 	
 	init() {
-		baseAddress = "http://..." // TODO!
+		baseAddress = "http://192.168.33.25:8080/"
 		self.jsonDecoder.dateDecodingStrategy = .iso8601
 		self.jsonEncoder.dateEncodingStrategy = .iso8601
 	}

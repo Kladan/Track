@@ -10,20 +10,20 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class LocationViewController: UIViewController, CLLocationManagerDelegate {
+class LocationViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
 
 	@IBOutlet weak var mapView: MKMapView!
 	var locationManager: CLLocationManager!
 	var lastLocation: CLLocationCoordinate2D?
-	let delegate = UIApplication.shared.delegate as! AppDelegate
+	let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-	
 	override func viewDidLoad() {
         super.viewDidLoad()
 
 		mapView.showsUserLocation = true
 		
-		var saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.done, target: self, action: #selector(self.saveLocation) )
+		
+		let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.done, target: self, action: #selector(self.saveLocation) )
 		navigationItem.rightBarButtonItem = saveButton
 		
 		
@@ -35,49 +35,58 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
 			locationManager.requestWhenInUseAuthorization()
 			locationManager.startUpdatingLocation()
 			
-			
 		}
-		
-		
 	}
 	
 	
 	@objc func saveLocation() {
+
 		UISelectionFeedbackGenerator().selectionChanged()
-		
-		
-		delegate.app.myCurrentLocation = lastLocation
+		appDelegate.app.myCurrentLocation = lastLocation
 		navigationController?.popViewController(animated: true)
 	}
 	
+//	func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+//
+//		let annotationView = MKAnnotationView()
+//
+//		annotationView.isDraggable = true
+//
+//		annotationView.annotation = annotation
+//
+//		return annotationView
+//
+//	}
+//
 	
 	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-		print("here locations", locations.first)
 		
-		CLGeocoder().reverseGeocodeLocation(locations.first!) { (placemarks, error) in
+		if let userLocation = locations.first {
 			
-			self.delegate.app.myCurrentPlacemark = placemarks?.first
+			CLGeocoder().reverseGeocodeLocation(locations.first!) { (placemarks, error) in
+				
+				self.appDelegate.app.myCurrentPlacemark = placemarks?.first
+				
+			}
+			lastLocation = locations.first?.coordinate
 			
-			print(placemarks)
-			
-			
+
+			let myAnnotation: MKPointAnnotation = MKPointAnnotation()
+			myAnnotation.coordinate = CLLocationCoordinate2DMake(userLocation.coordinate.latitude, userLocation.coordinate.longitude);
+			myAnnotation.title = "Your location"
+			mapView.addAnnotation(myAnnotation)
 		}
-		lastLocation = locations.first?.coordinate
-		
-		
 	}
 	
 	
+//	func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, didChange newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+//		switch newState {
+//		case .starting:
+//			view.dragState = .dragging
+//		case .ending, .canceling:
+//			view.dragState = .none
+//		default: break
+//		}
+//	}
 	
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

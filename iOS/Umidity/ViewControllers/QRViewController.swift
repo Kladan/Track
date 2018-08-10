@@ -14,23 +14,19 @@ class QRViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
 	
 	var captureSession:AVCaptureSession!
 	var videoPreviewLayer:AVCaptureVideoPreviewLayer?
-	var qrCodeFrameView:UIView?
-	let delegate = UIApplication.shared.delegate as! AppDelegate
+	let appDelegate = UIApplication.shared.delegate as! AppDelegate
+	var delegate:QRDelegateProtocol?
 	
 	
 	override func viewDidAppear(_ animated: Bool) {
-		
-		
 		super.viewDidAppear(animated)
 		
 		requestCameraPermission { _ in
 			
 			self.captureSession = AVCaptureSession()
 			
-			
 			let device = AVCaptureDevice.default(for: AVMediaType.video)
-			
-			
+
 			guard let captureDevice = device else {
 				print("Failed to get the camera device")
 				return
@@ -54,14 +50,7 @@ class QRViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
 			
 			self.captureSession?.addOutput(captureMetadataOutput)
 			
-			
-			print("avail", captureMetadataOutput.availableMetadataObjectTypes)
-			
-			
-			
-			
 			captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-			print(captureMetadataOutput.metadataObjectTypes)
 			captureMetadataOutput.metadataObjectTypes = [.qr]
 			
 			// Initialize the video preview layer and add it as a sublayer to the viewPreview view's layer.
@@ -74,19 +63,9 @@ class QRViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
 				self.view.layer.addSublayer(self.videoPreviewLayer!)
 			}
 			
-			
 			self.captureSession?.startRunning()
 			
-			
 		}
-		
-		
-		
-		
-		
-		// Move the message label and top bar to the front
-		//		view.bringSubview(toFront: messageLabel)
-		//		view.bringSubview(toFront: topbar)
 		
 	}
 	
@@ -100,8 +79,6 @@ class QRViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
 	func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
 		
 		if metadataObjects.count == 0 {
-			qrCodeFrameView?.frame = CGRect.zero
-			// messageLabel.text = "No QR code is detected"
 			return
 		}
 		
@@ -109,22 +86,45 @@ class QRViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
 		let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
 		
 		if metadataObj.type == AVMetadataObject.ObjectType.qr {
-			// If the found metadata is equal to the QR code metadata then update the status label's text and set the bounds
-			let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj)
-			qrCodeFrameView?.frame = barCodeObject!.bounds
 			
-			if metadataObj.stringValue != nil {
-				print(metadataObj.stringValue)
-				delegate.app.newDeviceId  = metadataObj.stringValue
+			if let value = metadataObj.stringValue {
 				
-				captureSession.stopRunning()
-				navigationController?.popViewController(animated: true)
+				self.storeDeviceId(value: value)
+				
+				delegate?.returnQRData(value: value)
+				
+				UINotificationFeedbackGenerator().notificationOccurred(.success)
+				self.captureSession.stopRunning()
+				connection.isEnabled = false
+				
+				
+				DispatchQueue.main.async {
+					self.videoPreviewLayer?.removeFromSuperlayer()
+				}
+			
+				self.navigationController?.popViewController(animated: true)
+				
 			}
 		}
 		
 	}
 	
+	func storeDeviceId(value: String) {
+		appDelegate.app.setNewDeviceId(value: value)
+	}
+	
+	override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		self.captureSession = nil
+		self.videoPreviewLayer = nil
+	}
 	
 	
 	
+	
+}
+
+// protocol to give data backwards to setup-viewcontroller
+protocol QRDelegateProtocol {
+	func returnQRData(value: String)
 }
