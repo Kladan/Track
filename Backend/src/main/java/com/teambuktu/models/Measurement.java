@@ -27,7 +27,7 @@ public class Measurement {
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private Date timestamp;
 
-	private float temperature;
+	private int temperature;
 
 	public String getId() {
 		return id;
@@ -61,11 +61,11 @@ public class Measurement {
 		this.timestamp = timestamp;
 	}
 
-	public float getTemperature() {
+	public int getTemperature() {
 		return temperature;
 	}
 
-	public void setTemperature(float temperature) {
+	public void setTemperature(int temperature) {
 		this.temperature = temperature;
 	}
 

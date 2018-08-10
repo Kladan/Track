@@ -12,5 +12,7 @@ public interface MeasurementRepository extends MongoRepository<Measurement, Stri
 
 	public List<Measurement> findByDeviceIdentifierOrderByTimestampDesc(String deviceIdentifier);
 
+	public List<Measurement> findTop3ByDeviceIdentifierOrderByTimestampDesc(String deviceIdentifier);
+
 	public Measurement findFirstByDeviceIdentifierOrderByTimestampDesc(String deviceIdentifier);
 }
