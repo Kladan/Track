@@ -2,11 +2,13 @@ package com.teambuktu.models;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Measurement {
 
 	@Id
