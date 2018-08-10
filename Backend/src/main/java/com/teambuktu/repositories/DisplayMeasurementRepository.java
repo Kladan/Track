@@ -1,10 +1,10 @@
 package com.teambuktu.repositories;
 
-import com.teambuktu.models.DisplayMeasurement;
-import com.teambuktu.models.Measurement;
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.List;
+import com.teambuktu.models.DisplayMeasurement;
 
 public interface DisplayMeasurementRepository extends MongoRepository<DisplayMeasurement, String> {
 

@@ -7,13 +7,10 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class Measurement {
 
 	@Id
 	private String id;
-
 
 	private String deviceIdentifier;
 
