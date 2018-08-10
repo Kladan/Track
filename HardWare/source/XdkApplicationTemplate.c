@@ -154,7 +154,30 @@ uint32_t getSoilData(void) {
 	return AdcSample;
 }
 
+void printOwnIp(void) {
+	NetworkConfig_IpSettings_T myIp;
+	NetworkConfig_GetIpSettings(&myIp);
+
+	// insert a delay here, if the IP is not properly printed
+	printf("The IP was retrieved: %u.%u.%u.%u \n\r",
+	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 3)),
+	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 2)),
+	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 1)),
+	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 0)));
+}
+
+void connectToWifi(void) {
+	Retcode_T retStatusConnect = (Retcode_T) WlanConnect_WPA(connectSSID,
+	            connectPassPhrase,0);
+	if (retStatusConnect == RETCODE_OK) {
+		printOwnIp();
+	}
+}
+
 static void publish(void) {
+	if (WlanConnect_GetCurrentNwStatus() != CONNECTED_AND_IPV4_ACQUIRED){
+		connectToWifi();
+	}
 	static char *pub_topic = "SensorData";
 	static StringDescr_T pub_topic_descr;
 	StringDescr_wrap(&pub_topic_descr, pub_topic);
@@ -181,8 +204,6 @@ void printData(xTimerHandle xTimer) {
 	// printf("Messweert: Test\n\r");
 }
 
-
-
 void createTimer(void) {
 	timerHandle = xTimerCreate(
 		(const char * const) "My Timer", // used only for debugging purposes
@@ -198,25 +219,7 @@ void createTimer(void) {
 	}
 }
 
-void printOwnIp(void) {
-	NetworkConfig_IpSettings_T myIp;
-	NetworkConfig_GetIpSettings(&myIp);
 
-	// insert a delay here, if the IP is not properly printed
-	printf("The IP was retrieved: %u.%u.%u.%u \n\r",
-	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 3)),
-	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 2)),
-	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 1)),
-	(unsigned int) (NetworkConfig_Ipv4Byte(myIp.ipV4, 0)));
-}
-
-void connectToWifi(void) {
-	Retcode_T retStatusConnect = (Retcode_T) WlanConnect_WPA(connectSSID,
-	            connectPassPhrase,0);
-	if (retStatusConnect == RETCODE_OK) {
-		printOwnIp();
-	}
-}
 
 void initWifi(void) {
 	WlanConnect_Init();
@@ -234,6 +237,15 @@ static void handle_connection(MqttConnectionEstablishedEvent_T connectionData) {
           (int) rc_connect);
 }
 
+retcode_t connectMQTT(void) {
+	retcode_t rc = RC_INVALID_STATUS;
+	rc = Mqtt_connect(session_ptr);
+	if (rc != RC_OK) {
+		printf("Could not connect, error 0x%04x\n", rc);
+	}
+	return rc;
+}
+
 retcode_t event_handler(MqttSession_T* session, MqttEvent_t event,
               const MqttEventData_t* eventData) {
 	BCDS_UNUSED(session);
@@ -249,6 +261,7 @@ retcode_t event_handler(MqttSession_T* session, MqttEvent_t event,
     		break;
     	case MQTT_CONNECTION_ERROR:
     		handle_connection(eventData->connect);
+    		connectMQTT();
     		break;
     	case MQTT_INCOMING_PUBLISH:
     		break;
@@ -317,15 +330,6 @@ void config_set_connect_data(void) {
 
 void config_set_event_handler(void) {
 	session_ptr->onMqttEvent = event_handler;
-}
-
-retcode_t connectMQTT(void) {
-	retcode_t rc = RC_INVALID_STATUS;
-	rc = Mqtt_connect(session_ptr);
-	if (rc != RC_OK) {
-		printf("Could not connect, error 0x%04x\n", rc);
-	}
-	return rc;
 }
 
 void appInitSystem(void * CmdProcessorHandle, uint32_t param2) {
